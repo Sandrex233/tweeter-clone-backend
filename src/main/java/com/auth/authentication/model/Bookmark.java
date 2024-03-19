@@ -1,12 +1,10 @@
 package com.auth.authentication.model;
 
-
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user_like")
-public class Like {
-
+@Table(name = "bookmarks")
+public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,25 +13,25 @@ public class Like {
     @JoinColumn(name = "user_id")
     private ApplicationUser user;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "post_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "post_id")
     private Post post;
 
-    public Like() {
+    public Bookmark() {
     }
 
-    public Like(Long id, ApplicationUser user, Post post) {
+    public Bookmark(Long id, ApplicationUser user, Post post) {
         this.id = id;
         this.user = user;
         this.post = post;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public ApplicationUser getUser() {

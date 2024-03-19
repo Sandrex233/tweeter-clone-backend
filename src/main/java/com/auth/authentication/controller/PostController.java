@@ -1,8 +1,11 @@
 package com.auth.authentication.controller;
 
+import com.auth.authentication.dtos.CommentResponseDto;
 import com.auth.authentication.dtos.PostDto;
+import com.auth.authentication.model.Comment;
 import com.auth.authentication.model.Post;
 import com.auth.authentication.repository.UserRepository;
+import com.auth.authentication.services.CommentService;
 import com.auth.authentication.services.LikeService;
 import com.auth.authentication.services.PostService;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +21,11 @@ import java.io.IOException;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/posts")
+@RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final CommentService commentService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<Page<Post>> getUserPostsById(@PathVariable Long userId,
@@ -53,6 +57,28 @@ public class PostController {
         Page<Post> userLikedPosts = postService.getLikedPosts(username, page, size, direction);
 
         return ResponseEntity.ok(userLikedPosts);
+    }
+
+    @GetMapping("/bookmarked-posts")
+    public ResponseEntity<Page<Post>> getBookmarkedPosts(@AuthenticationPrincipal Jwt jwt,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(defaultValue = "DESC") String direction) {
+
+        String username = jwt.getSubject();
+        Page<Post> userBookmarkedPosts = postService.getBookmarkedPosts(username, page, size, direction);
+
+        return ResponseEntity.ok(userBookmarkedPosts);
+    }
+
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<Page<CommentResponseDto>> getCommentsByPostId(@PathVariable Long postId,
+                                                                        @RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "10") int size,
+                                                                        @RequestParam(defaultValue = "DESC") String direction) {
+
+        Page<CommentResponseDto> postComments = commentService.getCommentsByPostId(postId, page, size, direction);
+        return ResponseEntity.ok(postComments);
     }
 
     @PostMapping("/")

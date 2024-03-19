@@ -8,17 +8,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/likes")
+@RequestMapping("/api/v1/likes")
 @CrossOrigin("*")
 @RequiredArgsConstructor
 public class LikeController {
     private final LikeService likeService;
-
-//    @GetMapping("/")
-//    public ResponseEntity<String> getLikedPosts(@AuthenticationPrincipal Jwt jwt) {
-//        String username = jwt.getSubject();
-//        return ResponseEntity.ok("Post liked successfully");
-//    }
 
     @PostMapping("/{postId}/like")
     public ResponseEntity<String> likePost(@PathVariable Long postId, @AuthenticationPrincipal Jwt jwt) {

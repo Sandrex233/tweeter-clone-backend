@@ -16,4 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.id IN (SELECT l.post.id FROM Like l WHERE l.user.username = :username)")
     Page<Post> findLikedPosts(@Param("username") String username, PageRequest pageRequest);
+
+    @Query("SELECT p FROM Post p WHERE p.id IN (SELECT b.post.id FROM Bookmark b WHERE b.user.username = :username)")
+    Page<Post> findBookmarkedPosts(@Param("username") String username, PageRequest pageRequest);
 }

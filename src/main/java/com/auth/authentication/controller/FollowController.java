@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/follow")
+@RequestMapping("/api/v1/follow")
 @CrossOrigin("*")
 @RequiredArgsConstructor
 public class FollowController {

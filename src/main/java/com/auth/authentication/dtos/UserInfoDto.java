@@ -26,6 +26,12 @@ public class UserInfoDto {
         this.coverPic = coverPic;
     }
 
+    public UserInfoDto(Integer id, String name, byte[] profilePic) {
+        this.userId = id;
+        this.name = name;
+        this.profilePic = profilePic;
+    }
+
     public void setUserId(Integer userId) {
         this.userId = userId;
     }

@@ -5,6 +5,8 @@ import com.auth.authentication.exceptions.AppException;
 import com.auth.authentication.exceptions.UserNotFoundException;
 import com.auth.authentication.model.ApplicationUser;
 import com.auth.authentication.model.Post;
+import com.auth.authentication.repository.CommentRepository;
+import com.auth.authentication.repository.LikeRepository;
 import com.auth.authentication.repository.PostRepository;
 import com.auth.authentication.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +28,8 @@ import java.util.Date;
 public class PostService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
     @Transactional
     public void createPost(String username, PostDto postDto) throws IOException {
         ApplicationUser user = userRepository.findByUsername(username).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
@@ -68,6 +72,13 @@ public class PostService {
         return postRepository.findLikedPosts(username, pageRequest);
     }
 
+    public Page<Post> getBookmarkedPosts(String username, int page, int size, String direction) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, "postDate"));
+
+        return postRepository.findBookmarkedPosts(username, pageRequest);
+    }
+
     @Transactional
     public void deletePost(String username, Long postId) {
         Post post = postRepository.findById(postId)
@@ -77,8 +88,13 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this post");
         }
 
+        commentRepository.deleteByPostId(postId);
+
+        likeRepository.deleteByPostId(postId);
+
         postRepository.delete(post);
     }
+
 
 
 }
