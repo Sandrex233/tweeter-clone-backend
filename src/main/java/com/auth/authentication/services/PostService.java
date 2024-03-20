@@ -103,8 +103,15 @@ public class PostService {
         Post originalPost = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with ID: " + postId));
 
-        if (originalPost.getAuthor().getUserId().equals(retweeter.getUserId())) {
-            throw new IllegalArgumentException("Cannot retweet your own post");
+        // Check if the user has already retweeted this post
+        boolean hasRetweeted = retweetRepository.existsByOriginalPostAndRetweeter(originalPost, retweeter);
+        if (hasRetweeted) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have already retweeted this post");
+        }
+
+        // Check if the user is trying to retweet their own post
+        if (originalPost.getAuthor().equals(retweeter)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot retweet your own post");
         }
 
         Retweet retweet = new Retweet(originalPost, retweeter, new Date());
