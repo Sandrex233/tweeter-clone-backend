@@ -18,7 +18,7 @@ public class Post {
     private String textContent;
 
     @Lob
-    @Column(name = "mediaContent", length = 10000000, nullable = true)
+    @Column(name = "mediaContent", length = 100000000, nullable = true)
     private byte[] mediaContent;
 
     @Temporal(TemporalType.TIMESTAMP)

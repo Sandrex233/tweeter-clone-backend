@@ -86,13 +86,22 @@ public class PostController {
         String username = jwt.getSubject();
         try {
             postService.createPost(username, postDto);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body("Post created");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-
+    @PostMapping("/{postId}")
+    public ResponseEntity<String> retweetPost(@AuthenticationPrincipal Jwt jwt, @PathVariable Long postId) {
+        String username = jwt.getSubject();
+        try {
+            postService.retweetPost(postId, username);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Post retweeted");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<String> deletePost(@AuthenticationPrincipal Jwt jwt, @PathVariable Long postId) {

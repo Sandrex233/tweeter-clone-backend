@@ -5,10 +5,8 @@ import com.auth.authentication.exceptions.AppException;
 import com.auth.authentication.exceptions.UserNotFoundException;
 import com.auth.authentication.model.ApplicationUser;
 import com.auth.authentication.model.Post;
-import com.auth.authentication.repository.CommentRepository;
-import com.auth.authentication.repository.LikeRepository;
-import com.auth.authentication.repository.PostRepository;
-import com.auth.authentication.repository.UserRepository;
+import com.auth.authentication.model.Retweet;
+import com.auth.authentication.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,6 +28,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final RetweetRepository retweetRepository;
+
     @Transactional
     public void createPost(String username, PostDto postDto) throws IOException {
         ApplicationUser user = userRepository.findByUsername(username).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
@@ -96,5 +96,18 @@ public class PostService {
     }
 
 
+    @Transactional
+    public void retweetPost(Long postId, String username) {
+        ApplicationUser retweeter = userRepository.findByUsername(username).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
+        Post originalPost = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with ID: " + postId));
+
+        if (originalPost.getAuthor().getUserId().equals(retweeter.getUserId())) {
+            throw new IllegalArgumentException("Cannot retweet your own post");
+        }
+
+        Retweet retweet = new Retweet(originalPost, retweeter, new Date());
+        retweetRepository.save(retweet);
+    }
 }

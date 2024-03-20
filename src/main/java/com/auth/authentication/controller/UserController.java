@@ -52,7 +52,7 @@ public class UserController {
     public ResponseEntity<String> uploadUserInfo(@AuthenticationPrincipal Jwt jwt, @RequestBody @ModelAttribute @Valid EditDto editDto) throws IOException {
         String username = jwt.getSubject(); // Extract username from JWT token
         userInfoService.uploadUserInfo(username, editDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(username + "User Info Uploaded successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body(username + " User Info Uploaded successfully");
     }
 
     @PutMapping("/")

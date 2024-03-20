@@ -20,4 +20,19 @@ public class AuthenticationApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AuthenticationApplication.class, args);
 	}
+	@Bean
+	CommandLineRunner run(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncode){
+		return args ->{
+			if(roleRepository.findByAuthority("ADMIN").isPresent()) return;
+			Role adminRole = roleRepository.save(new Role("ADMIN"));
+			roleRepository.save(new Role("USER"));
+
+			Set<Role> roles = new HashSet<>();
+			roles.add(adminRole);
+
+			ApplicationUser admin = new ApplicationUser(1, "admin", passwordEncode.encode("password"), roles);
+
+			userRepository.save(admin);
+		};
+	}
 }
